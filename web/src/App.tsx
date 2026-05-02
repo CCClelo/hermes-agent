@@ -298,7 +298,7 @@ function buildRoutes(
 
 export default function App() {
   const { t } = useI18n();
-  const { pathname } = useLocation();
+  const { pathname, search: locationSearch } = useLocation();
   const { manifests, loading: pluginsLoading } = usePlugins();
   const { theme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -306,6 +306,9 @@ export default function App() {
   const isDocsRoute = pathname === "/docs" || pathname === "/docs/";
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
   const isChatRoute = normalizedPath === "/chat";
+  const chatResumeKey = useMemo(() => {
+    return new URLSearchParams(locationSearch).get("resume") ?? "";
+  }, [locationSearch]);
   const embeddedChat = isDashboardEmbeddedChatEnabled();
 
   // A plugin can replace the built-in /chat page via `tab.override: "/chat"`
@@ -610,7 +613,7 @@ export default function App() {
                       )}
                       aria-hidden={!isChatRoute}
                     >
-                      <ChatPage isActive={isChatRoute} />
+                      <ChatPage key={chatResumeKey} isActive={isChatRoute} />
                     </div>
                   ))}
               </div>
